@@ -1,47 +1,68 @@
-# RandomWriter — Word-Level Markov Text Generator in C++
+# MarkovText: Stochastic N-Gram Prediction Engine
 
-📄 RandomWriter is a C++ application that generates logical text output using a word-level Markov model. By training on different source texts, it captures stylistic and statistical patterns of word transitions and uses them to extend or simulate writing in a consistent manner.
+![Language](https://img.shields.io/badge/language-C++-blue.svg)
+![Type](https://img.shields.io/badge/category-NLP-orange.svg)
+![Status](https://img.shields.io/badge/status-Active-green.svg)
 
-## 🔍 How It Works
+MarkovText is a C++ application that implements a word-level Markov Chain algorithm to simulate natural language patterns. By analyzing the statistical distribution of word transitions in a source corpus, the engine builds a probability map (N-gram model) to generate coherent, stylistically consistent text extensions.
 
-- Users select a writing style based on preloaded training `.txt` files.
-- The program builds a Markov map of word transitions from the selected file.
-- Users then provide an input file to extend or complete.
-- The program identifies the most frequent words in the user input and merges them into the trained model.
-- It then generates new text using the blended Markov model.
+This project serves as a low-level demonstration of the probabilistic principles behind modern Large Language Models (LLMs).
 
-## ✅ Features
+## Key Features
 
-- Word-level Markov model for generating coherent text
-- Trains on any number of user-supplied `.txt` style files
-- Automatically extracts and merges most frequent words from input documents
-- Produces consistent and statistically grounded sequences
-- Easy to customize constants (merge size, word count, training sources)
+- **N-Gram Modeling:** Builds a dynamic graph of word states and transition probabilities (Order-K Markov Model) to predict the next token in a sequence.
+- **Contextual Adaptation:** Features a "Merge" algorithm that analyzes user input, identifies high-frequency terms, and biases the generation model to mimic the user's specific writing style.
+- **Corpus Agnostic:** Capable of ingesting any plain text (.txt) corpus—from Shakespeare to financial reports—and adopting its statistical voice immediately.
+- **Efficient Lookups:** Utilizes high-performance hash maps to store thousands of state transitions with O(1) average access time.
 
-## 💡 Example Use Cases
+## Technical Implementation
 
-- Text generation from a selected writing corpus  
-- Extension of incomplete articles, reports, or student papers  
-- Modeling writing patterns across multiple authors  
-- Studying transition probabilities in natural language
+### The Algorithm
+The engine parses text into a multi-dimensional map structure:
+1. **Training:** The source text is scanned to create a frequency table of `Seed -> {Next_Word, Probability}`.
+2. **Analysis:** The "Order" (K) determines how many previous words constitute a "state." (e.g., in an Order-2 model, "The quick" predicts "brown").
+3. **Generation:** Starting from a seed, the engine performs a weighted random walk through the probability graph to construct new sentences.
 
-## 🧰 Requirements
+### Complexity
+- **Time Complexity:** O(N) for training (linear scan of corpus).
+- **Space Complexity:** O(U) where U is the number of unique K-gram combinations in the source text.
 
-- C++ (C++11 or later)
-- Stanford C++ libraries: `console.h`, `simpio.h`, etc.
-- Compatible build environment (e.g., Qt, Visual Studio, or terminal with proper setup)
+## Installation & Usage
 
-## 📂 Customization
+### Prerequisites
+- C++ Compiler (g++ or clang) supporting C++11 standard.
+- StanfordCPPLib (Required for console interface and simplified I/O).
 
-- Add more `.txt` training files in the source directory
-- Modify constants such as:
-  - `NUM_OF_WORDS_MERGED`
-  - `MIN_WORD_TO_GENERATE`
-  - `NUM_OF_TRAINING_FILES`
+### Usage
+1. Compile the source code using the provided Makefile or your preferred IDE.
+2. Place your training data (e.g., `literature.txt`) in the `res/` directory.
+3. Run the executable:
 
-## 📌 Notes
+    ./MarkovText
 
-- All training and input files should be present in the same directory as the `.cpp` source
-- Generated text depends on the overlap between the training corpus and input content
-- Graceful early exit occurs if the current word has no known next word in the Markov chain
+4. Follow the console prompts to select a "Base Style" (training file) and an "Input Context" (file to extend).
 
+## Configuration
+The generation behavior can be fine-tuned via constants in the header file:
+
+- **NUM_OF_WORDS_MERGED:** Controls how aggressively the model blends the user's input style with the base corpus.
+- **MIN_WORD_TO_GENERATE:** Sets the lower bound for output length.
+- **ORDER_K:** (Advanced) Adjusts the Markov chain order (higher K = more coherent but less creative).
+
+## Project Structure
+
+    ├── src/
+    │   ├── RandomWriter.cpp    # Core Markov Chain logic and generation loop
+    │   └── main.cpp            # Entry point and UI handling
+    ├── res/                    # Training corpora (.txt files)
+    ├── README.md
+    └── LICENSE
+
+## Future Improvements
+- Refactor to remove dependencies on educational libraries (Standard STL only).
+- Implement character-level generation for code or poetry modeling.
+- Add serialization to save trained models to disk for instant loading.
+
+---
+
+**Author:** Luka Aladashvili
